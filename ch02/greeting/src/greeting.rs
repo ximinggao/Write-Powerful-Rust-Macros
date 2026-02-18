@@ -4,7 +4,7 @@ pub fn base_greeting_fn(name: &str, greeting: &str) -> String {
 
 macro_rules! greeting {
     ($name:literal) => {
-        base_greeting_fn($name, "hello")
+        base_greeting_fn($name, "Hello")
     };
     ($name:literal,$greeting:literal) => {
         base_greeting_fn($name, $greeting)
