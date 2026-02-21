@@ -8,5 +8,5 @@ macro_rules! greeting {
     };
     ($name:literal,$greeting:literal) => {
         base_greeting_fn($name, $greeting)
-    }
+    };
 }
