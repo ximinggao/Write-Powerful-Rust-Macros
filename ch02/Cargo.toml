@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
 
-members = ["dsl","greeting",
+members = ["compose","dsl","greeting",
     "my-vec", "trace-macros",
 ]
