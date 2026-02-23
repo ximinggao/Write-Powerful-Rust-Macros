@@ -12,7 +12,7 @@ macro_rules! my_vec {
             v
         }
     };
-    [$($x:expr),+] => {
+    [$($x:expr),+$(,)?] => {
         {
             let mut v = Vec::new();
             $(
@@ -30,4 +30,6 @@ fn main() {
     println!("{:?}", also_empty);
     let three_numbers = my_vec!(1, 2, 3);
     println!("{:?}", three_numbers);
+    let four_numbers = my_vec!{4, 5, 6, 7,};
+    println!("{:?}", four_numbers);
 }
