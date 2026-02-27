@@ -1,0 +1,7 @@
+[package]
+name = "make-public-with-struct-field"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+make-public-macro-with-struct-field = { path = "./make-public-macro" }
