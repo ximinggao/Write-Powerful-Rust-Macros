@@ -1,0 +1,7 @@
+[package]
+name = "make-public-using-parse"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+make-public-macro-using-parse = { path = "./make-public-macro"}

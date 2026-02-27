@@ -18,12 +18,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "make-public-macro-using-parse"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "make-public-macro-with-struct-field"
 version = "0.1.0"
 dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "make-public-using-parse"
+version = "0.1.0"
+dependencies = [
+ "make-public-macro-using-parse",
 ]
 
 [[package]]

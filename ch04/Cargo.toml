@@ -1,4 +1,4 @@
 [workspace]
 resolver = "2"
 
-members = ["make-public", "make-public-with-struct-field"]
+members = ["make-public", "make-public-using-parse", "make-public-with-struct-field"]
