@@ -1,6 +1,11 @@
 use proc_macro::TokenStream;
 use quote::{ToTokens, quote};
-use syn::{Ident, Token, parse::{Parse, ParseStream}, parse_macro_input, punctuated::Punctuated};
+use syn::{
+    Ident, Token,
+    parse::{Parse, ParseStream},
+    parse_macro_input,
+    punctuated::Punctuated,
+};
 
 struct ComposeInput {
     expressions: Punctuated<Ident, Token!(.)>,
@@ -8,9 +13,9 @@ struct ComposeInput {
 
 impl Parse for ComposeInput {
     fn parse(input: ParseStream) -> syn::Result<Self> {
-        Ok(
-            ComposeInput { expressions: Punctuated::<Ident, Token!(.)>::parse_terminated(input).unwrap() }
-        )
+        Ok(ComposeInput {
+            expressions: Punctuated::<Ident, Token!(.)>::parse_terminated(input).unwrap(),
+        })
     }
 }
 
@@ -20,19 +25,17 @@ impl ToTokens for ComposeInput {
         let mut as_idents: Vec<&Ident> = self.expressions.iter().collect();
         let last_ident = as_idents.pop().unwrap();
 
-        as_idents.iter()
-            .rev()
-            .for_each(|i| {
-                if let Some(current_total) = &total {
-                    total = Some(quote! (
-                        compose_two(#i, #current_total)
-                    ));
-                } else {
-                    total = Some(quote! (
-                        compose_two(#i, #last_ident)
-                    ))
-                }
-            });
+        as_idents.iter().rev().for_each(|i| {
+            if let Some(current_total) = &total {
+                total = Some(quote! (
+                    compose_two(#i, #current_total)
+                ));
+            } else {
+                total = Some(quote! (
+                    compose_two(#i, #last_ident)
+                ))
+            }
+        });
 
         total.to_tokens(tokens);
     }
@@ -45,7 +48,7 @@ pub fn compose(item: TokenStream) -> TokenStream {
     quote! {
         {
             fn compose_two<FIRST, SECOND, THIRD, F, G>(first: F, second: G) -> impl Fn(FIRST) -> THIRD
-            where 
+            where
                 F: Fn(FIRST) -> SECOND,
                 G: Fn(SECOND) -> THIRD,
             {

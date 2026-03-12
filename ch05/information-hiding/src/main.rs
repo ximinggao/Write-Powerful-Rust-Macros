@@ -15,6 +15,7 @@ fn main() {
 
     e.get_string_value();
     e.get_number_value();
+    e.hello();
 }
 
 #[cfg(test)]

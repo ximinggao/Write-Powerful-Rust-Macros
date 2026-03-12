@@ -1,4 +1,4 @@
 [workspace]
 resolver = "2"
 
-members = ["information-hiding"]
+members = ["compose","information-hiding"]

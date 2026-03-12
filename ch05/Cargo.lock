@@ -3,6 +3,22 @@
 version = 4
 
 [[package]]
+name = "compose"
+version = "0.1.0"
+dependencies = [
+ "function-like-compose-macro",
+]
+
+[[package]]
+name = "function-like-compose-macro"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "information-hiding"
 version = "0.1.0"
 dependencies = [
