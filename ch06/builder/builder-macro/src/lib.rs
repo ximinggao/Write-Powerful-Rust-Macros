@@ -1,14 +1,7 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+use builder_code::create_builder;
+use proc_macro::TokenStream;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
+#[proc_macro_derive(Builder)]
+pub fn builder(item: TokenStream) -> TokenStream {
+    create_builder(item.into()).into()
 }
