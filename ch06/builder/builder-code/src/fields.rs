@@ -1,5 +1,5 @@
 use quote::quote;
-use syn::{Field, Type, punctuated::Punctuated, token::Comma};
+use syn::{Field, punctuated::Punctuated, token::Comma};
 
 pub fn builder_field_definitions(
     fields: &Punctuated<Field, Comma>,
@@ -25,7 +25,7 @@ pub fn builder_methods(
     fields.iter().map(|f| {
         let (field_name, field_type) = get_name_and_type(f);
         quote! {
-            pub fn #field_name(&mut self, input: #field_type) -> &mut Self {
+            pub fn #field_name(mut self, input: #field_type) -> Self {
                 self.#field_name = Some(input);
                 self
             }
@@ -37,19 +37,11 @@ pub fn original_struct_setters(
     fields: &Punctuated<Field, Comma>,
 ) -> impl Iterator<Item = proc_macro2::TokenStream> {
     fields.iter().map(|f| {
-        let (field_name, field_type) = get_name_and_type(f);
+        let field_name = &f.ident;
         let field_name_as_string = field_name.as_ref().unwrap().to_string();
-        let error = quote! {
-            expect(&format!("{} is not set", #field_name_as_string))
-        };
-        let handle_type = if matches_type(field_type, "String") {
-            quote! { as_ref().#error.to_string() }
-        } else {
-            quote! { #error }
-        };
 
         quote! {
-            #field_name: self.#field_name.#handle_type
+            #field_name: self.#field_name.expect(concat!("field not set: ", #field_name_as_string))
         }
     })
 }
@@ -58,14 +50,6 @@ fn get_name_and_type(f: &Field) -> (&Option<syn::Ident>, &syn::Type) {
     let field_name = &f.ident;
     let field_type = &f.ty;
     (field_name, field_type)
-}
-
-fn matches_type(ty: &Type, expected: &str) -> bool {
-    if let Type::Path(p) = ty {
-        let first_match = p.path.segments[0].ident.to_string();
-        return first_match == *expected;
-    }
-    false
 }
 
 #[cfg(test)]

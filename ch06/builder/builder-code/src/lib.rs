@@ -34,7 +34,7 @@ pub fn create_builder(item: TokenStream) -> TokenStream {
         impl #builder {
             #(#builder_methods)*
 
-            pub(crate) fn build(&self) -> #name {
+            pub(crate) fn build(self) -> #name {
                 #name {
                     #(#original_struct_set_fields,)*
                 }
