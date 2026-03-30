@@ -1,12 +1,14 @@
 use panic_to_result_macro::panic_to_result;
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct Employee {
     name: String,
     age: u8,
 }
 
 #[panic_to_result]
+#[allow(dead_code)]
 fn create_employee(name: &str, age: u8) -> Employee {
     if age > 35 {
         panic!("Employee age cannot be greater than 35");

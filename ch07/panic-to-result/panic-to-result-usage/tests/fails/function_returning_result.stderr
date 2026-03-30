@@ -1,0 +1,6 @@
+error: this macro can only be applied to a function that does not return a Result.
+       Signature: Result < Employee, String >
+ --> tests/fails/function_returning_result.rs:4:1
+  |
+4 | fn create_employee_returning_result(name: &str, age: u8) -> Result<Employee, String> {
+  | ^^

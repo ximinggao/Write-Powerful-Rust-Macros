@@ -1,0 +1,5 @@
+error: please make sure every panic in your function has a message, check: panic! ();
+ --> tests/fails/function_empty_panic.rs:6:9
+  |
+6 |         panic!();
+  |         ^^^^^
