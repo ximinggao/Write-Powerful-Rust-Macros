@@ -13,6 +13,25 @@ mod tests {
     use super::*;
 
     #[test]
+    fn should_generate_builder_for_struct_with_one_renamed_property() {
+        #[derive(Builder)]
+        struct Gleipnir {
+            #[rename("tops_of")]
+            roots_of: String,
+            #[rename = "fish_birth"]
+            birth_of_a_fish: u8,
+        }
+
+        let gleipnir = Gleipnir::builder()
+            .tops_of("mountains".to_string())
+            .fish_birth(1)
+            .build();
+
+        assert_eq!(gleipnir.roots_of, "mountains".to_string());
+        assert_eq!(gleipnir.birth_of_a_fish, 1);
+    }
+
+    #[test]
     fn should_generate_builder_for_struct_with_no_properties() {
         #[derive(Builder)]
         struct ExampleStructNoFields {}
