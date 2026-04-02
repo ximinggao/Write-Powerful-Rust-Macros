@@ -3,7 +3,8 @@ use quote::{format_ident, quote};
 use syn::{Attribute, Data::Struct, DataStruct, DeriveInput, Fields::Named, FieldsNamed};
 
 use crate::fields::{
-    builder_field_definitions, builder_inits_values, builder_methods, original_struct_setters,
+    builder_field_definitions, builder_inits_values, builder_methods, optional_default_asserts,
+    original_struct_setters,
 };
 
 mod fields;
@@ -28,6 +29,11 @@ pub fn create_builder(item: TokenStream) -> TokenStream {
     let builder_inits = builder_inits_values(fields);
     let builder_methods = builder_methods(fields);
     let original_struct_set_fields = original_struct_setters(fields, use_defaults);
+    let optional_default_assertions = if use_defaults {
+        optional_default_asserts(fields)
+    } else {
+        vec![]
+    };
 
     quote! {
         struct #builder {
@@ -51,6 +57,8 @@ pub fn create_builder(item: TokenStream) -> TokenStream {
                 }
             }
         }
+
+        #(#optional_default_assertions)*
     }
 }
 

@@ -1,7 +1,7 @@
-use quote::quote;
+use quote::{format_ident, quote, quote_spanned};
 use syn::{
     Attribute, Expr, ExprLit, Field, Ident, Lit, LitStr, Meta, MetaNameValue,
-    punctuated::Punctuated, token::Comma,
+    punctuated::Punctuated, spanned::Spanned, token::Comma,
 };
 
 pub fn builder_field_definitions(
@@ -85,6 +85,22 @@ pub fn original_struct_setters(
 
             quote! {
                 #field_name: self.#field_name.#handle_type
+            }
+        })
+        .collect()
+}
+
+pub fn optional_default_asserts(
+    fields: &Punctuated<Field, Comma>,
+) -> Vec<proc_macro2::TokenStream> {
+    fields
+        .iter()
+        .map(|f| {
+            let name = &f.ident.as_ref().unwrap();
+            let ty = &f.ty;
+            let assertion_ident = format_ident!("__{}DefaultAssertion", name);
+            quote_spanned! {
+                ty.span() => struct #assertion_ident where #ty: core::default::Default;
             }
         })
         .collect()
