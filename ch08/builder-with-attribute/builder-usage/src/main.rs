@@ -32,6 +32,21 @@ mod tests {
     }
 
     #[test]
+    fn should_use_defaults_when_attribute_is_present() {
+        #[derive(Builder)]
+        #[builder_defaults]
+        struct ExampleStructTwoFields {
+            string_value: String,
+            int_value: i32,
+        }
+
+        let exmaple: ExampleStructTwoFields = ExampleStructTwoFields::builder().build();
+
+        assert_eq!(exmaple.string_value, String::default());
+        assert_eq!(exmaple.int_value, i32::default());
+    }
+
+    #[test]
     fn should_generate_builder_for_struct_with_no_properties() {
         #[derive(Builder)]
         struct ExampleStructNoFields {}

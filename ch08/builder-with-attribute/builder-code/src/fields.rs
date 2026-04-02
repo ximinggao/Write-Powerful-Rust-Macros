@@ -69,15 +69,37 @@ pub fn builder_methods(fields: &Punctuated<Field, Comma>) -> Vec<proc_macro2::To
 
 pub fn original_struct_setters(
     fields: &Punctuated<Field, Comma>,
-) -> impl Iterator<Item = proc_macro2::TokenStream> {
-    fields.iter().map(|f| {
-        let field_name = &f.ident;
-        let field_name_as_string = field_name.as_ref().unwrap().to_string();
+    use_defaults: bool,
+) -> Vec<proc_macro2::TokenStream> {
+    fields
+        .iter()
+        .map(|f| {
+            let field_name = &f.ident;
+            let field_name_as_string = field_name.as_ref().unwrap().to_string();
 
-        quote! {
-            #field_name: self.#field_name.expect(concat!("field not set: ", #field_name_as_string))
-        }
-    })
+            let handle_type = if use_defaults {
+                default_fallback()
+            } else {
+                panic_fallback(field_name_as_string)
+            };
+
+            quote! {
+                #field_name: self.#field_name.#handle_type
+            }
+        })
+        .collect()
+}
+
+fn panic_fallback(field_name_as_string: String) -> proc_macro2::TokenStream {
+    quote! {
+        expect(concat!("field not set: ", #field_name_as_string))
+    }
+}
+
+fn default_fallback() -> proc_macro2::TokenStream {
+    quote! {
+        unwrap_or_default()
+    }
 }
 
 fn get_name_and_type(f: &Field) -> (&Option<syn::Ident>, &syn::Type) {
