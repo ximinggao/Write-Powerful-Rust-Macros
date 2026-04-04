@@ -2,7 +2,10 @@ use builder_macro::Builder;
 
 #[derive(Builder)]
 #[allow(unused)]
-struct Gleipnir {}
+struct Gleipnir {
+    roots_of: String,
+    breath_of_a_fish: u8,
+}
 
 fn main() {
     println!("Hello, world!");
@@ -13,46 +16,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn should_generate_builder_for_struct_with_no_properties() {
-        #[derive(Builder)]
-        struct ExampleStructNoFields {}
-
-        let _: ExampleStructNoFields = ExampleStructNoFields::builder().build();
-    }
-
-    #[test]
-    fn should_generate_builder_for_struct_with_one_property() {
-        #[derive(Builder)]
-        struct Gleipnir {
-            roots_of: String,
-        }
-
-        let gleipnir = Gleipnir::builder()
-            .roots_of("mountains".to_string())
-            .build();
-
-        assert_eq!(gleipnir.roots_of, "mountains".to_string());
-    }
-
-    #[test]
-    fn should_generate_builder_for_struct_with_two_properties() {
-        #[derive(Builder)]
-        struct Gleipnir {
-            roots_of: String,
-            breath_of_a_fish: u8,
-        }
-
-        let gleipnir = Gleipnir::builder()
-            .roots_of("mountains".to_string())
-            .breath_of_a_fish(1)
-            .build();
-
-        assert_eq!(gleipnir.roots_of, "mountains".to_string());
-        assert_eq!(gleipnir.breath_of_a_fish, 1);
-    }
-
-    #[test]
-    fn should_generate_builder_for_struct_with_multiple_properties() {
+    fn should_generate_builder_for_struct_with_properties() {
         #[derive(Builder)]
         struct Gleipnir {
             roots_of: String,
@@ -75,13 +39,22 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "field not set: _roots_of")]
-    fn should_panic_if_field_not_set() {
+    fn should_work_with_correct_order() {
         #[derive(Builder)]
         struct Gleipnir {
-            _roots_of: String,
+            roots_of: String,
+            breath_of_a_fish: u8,
+            anything_else: bool,
         }
 
-        let _ = Gleipnir::builder().build();
+        let gleipnir = Gleipnir::builder()
+            .roots_of("moutains".to_string())
+            .breath_of_a_fish(1)
+            .anything_else(true)
+            .build();
+
+        assert_eq!(gleipnir.roots_of, "moutains".to_string());
+        assert_eq!(gleipnir.breath_of_a_fish, 1);
+        assert_eq!(gleipnir.anything_else, true);
     }
 }

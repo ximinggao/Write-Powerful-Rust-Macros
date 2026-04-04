@@ -1,17 +1,17 @@
 use proc_macro2::TokenStream;
-use quote::{format_ident, quote};
+use quote::quote;
 use syn::{Data::Struct, DataStruct, DeriveInput, Fields::Named, FieldsNamed};
 
 use crate::fields::{
-    builder_field_definitions, builder_inits_values, builder_methods, original_struct_setters,
+    builder_definition, builder_impl_for_struct, builder_methods, marker_trait_and_structs,
 };
 
 mod fields;
+mod util;
 
 pub fn create_builder(item: TokenStream) -> TokenStream {
     let ast: DeriveInput = syn::parse2(item).unwrap();
     let name = ast.ident;
-    let builder = format_ident!("{}Builder", name);
 
     let fields = match ast.data {
         Struct(DataStruct {
@@ -21,36 +21,18 @@ pub fn create_builder(item: TokenStream) -> TokenStream {
         _ => unimplemented!("only implemented for struct with named fields"),
     };
 
-    let builder_fields = builder_field_definitions(fields);
-    let builder_inits = builder_inits_values(fields);
-    let builder_methods = builder_methods(fields);
-    let original_struct_set_fields = original_struct_setters(fields);
+    let builder = builder_definition(&name, fields);
+    let builder_method_for_struct = builder_impl_for_struct(&name, fields);
+    let marker_and_structs = marker_trait_and_structs(&name, fields);
+    let builder_methods = builder_methods(&name, fields);
 
     quote! {
-        struct #builder {
-            #(#builder_fields,)*
-        }
-
-        impl #builder {
-            #(#builder_methods)*
-
-            pub(crate) fn build(self) -> #name {
-                #name {
-                    #(#original_struct_set_fields,)*
-                }
-            }
-        }
-
-        impl #name {
-            pub(crate) fn builder() -> #builder {
-                #builder {
-                    #(#builder_inits,)*
-                }
-            }
-        }
+        #builder
+        #builder_method_for_struct
+        #marker_and_structs
+        #builder_methods
     }
 }
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -58,7 +40,7 @@ mod tests {
     #[test]
     fn builder_struct_name_should_be_present_in_output() {
         let input = quote! {
-            struct Gleipnir {}
+            struct Gleipnir { name: String }
         };
         let output = create_builder(input);
         assert!(output.to_string().contains("GleipnirBuilder"));
