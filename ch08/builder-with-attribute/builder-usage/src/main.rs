@@ -1,8 +1,12 @@
 use builder_macro::Builder;
 
 #[derive(Builder)]
+#[builder_defaults]
 #[allow(unused)]
-struct Gleipnir {}
+struct Gleipnir {
+    roots_of: String,
+    breath_of_a_fish: u8,
+}
 
 fn main() {
     println!("Hello, world!");
