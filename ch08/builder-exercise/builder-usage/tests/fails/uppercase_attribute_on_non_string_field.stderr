@@ -1,0 +1,5 @@
+error: uppercase attribute only works on String fields
+  --> tests/fails/uppercase_attribute_on_non_string_field.rs:10:5
+   |
+10 |     breath_of_a_fish: u8,
+   |     ^^^^^^^^^^^^^^^^
