@@ -4,3 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+iac-macro = { path = "../iac-macro" }
+
+[dev-dependencies]
+trybuild = "1.0.116"
