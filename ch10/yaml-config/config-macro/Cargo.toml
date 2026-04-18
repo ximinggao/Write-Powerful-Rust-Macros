@@ -1,0 +1,9 @@
+[package]
+name = "config-macro"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+
+[lib]
+proc-macro = true
