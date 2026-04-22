@@ -14,6 +14,7 @@ mod output;
 #[cfg(feature = "struct")]
 mod struct_output;
 
+#[cfg(feature = "functional")]
 #[proc_macro]
 pub fn config(item: TokenStream) -> TokenStream {
     let input: ConfigInput = parse_macro_input!(item);

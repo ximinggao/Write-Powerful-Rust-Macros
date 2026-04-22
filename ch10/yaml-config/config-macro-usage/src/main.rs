@@ -1,5 +1,5 @@
-use config_macro::config_struct;
 use config_macro::config;
+use config_macro::config_struct;
 
 #[config_struct]
 #[derive(Debug)]
