@@ -1,8 +1,6 @@
-use std::collections::HashMap;
-
-use proc_macro2::{Span, TokenStream};
+use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{DeriveInput, Ident};
+use std::collections::HashMap;
 
 pub fn generate_config_struct(yaml_values: HashMap<String, String>) -> TokenStream {
     let inserts = generate_inserts(yaml_values);
@@ -20,31 +18,6 @@ pub fn generate_config_struct(yaml_values: HashMap<String, String>) -> TokenStre
     }
 }
 
-pub fn generate_annotation_struct(
-    input: DeriveInput,
-    yaml_values: HashMap<String, String>,
-) -> TokenStream {
-    let attributes = &input.attrs;
-    let name = &input.ident;
-    let fields = generate_fields(&yaml_values);
-    let inits = generate_inits(&yaml_values);
-
-    quote! {
-        #(#attributes)*
-        pub struct #name {
-            #(#fields,)*
-        }
-
-        impl #name {
-            pub fn new() -> Self {
-                #name {
-                    #(#inits,)*
-                }
-            }
-        }
-    }
-}
-
 fn generate_inserts(yaml_values: HashMap<String, String>) -> Vec<TokenStream> {
     yaml_values
         .iter()
@@ -52,31 +25,6 @@ fn generate_inserts(yaml_values: HashMap<String, String>) -> Vec<TokenStream> {
             let key = v.0;
             let value = v.1;
             quote!(map.insert(#key.to_string(), #value.to_string()))
-        })
-        .collect()
-}
-
-fn generate_fields(yaml_values: &HashMap<String, String>) -> Vec<TokenStream> {
-    yaml_values
-        .iter()
-        .map(|v| {
-            let key = Ident::new(v.0, Span::call_site());
-            quote! {
-                pub #key: String
-            }
-        })
-        .collect()
-}
-
-fn generate_inits(yaml_values: &HashMap<String, String>) -> Vec<TokenStream> {
-    yaml_values
-        .iter()
-        .map(|v| {
-            let key = Ident::new(v.0, Span::call_site());
-            let value = v.1;
-            quote! {
-                #key: #value.to_string()
-            }
         })
         .collect()
 }

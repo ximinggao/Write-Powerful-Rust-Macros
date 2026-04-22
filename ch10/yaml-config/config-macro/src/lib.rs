@@ -2,12 +2,17 @@ use std::{collections::HashMap, fs};
 
 use proc_macro::TokenStream;
 use proc_macro2::Span;
-use syn::{DeriveInput, parse_macro_input};
+use syn::parse_macro_input;
 
-use crate::{input::ConfigInput, output::{generate_annotation_struct, generate_config_struct}};
+#[cfg(feature = "struct")]
+use syn::DeriveInput;
+
+use crate::{input::ConfigInput, output::generate_config_struct};
 
 mod input;
 mod output;
+#[cfg(feature = "struct")]
+mod struct_output;
 
 #[proc_macro]
 pub fn config(item: TokenStream) -> TokenStream {
@@ -32,13 +37,14 @@ fn find_yaml_values(input: ConfigInput) -> Result<HashMap<String, String>, syn::
     serde_yaml::from_reader(file).map_err(|e| syn::Error::new(Span::call_site(), e.to_string()))
 }
 
+#[cfg(feature = "struct")]
 #[proc_macro_attribute]
 pub fn config_struct(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input: ConfigInput = parse_macro_input!(attr);
     let ast: DeriveInput = parse_macro_input!(item);
 
     match find_yaml_values(input) {
-        Ok(values) => generate_annotation_struct(ast, values).into(),
+        Ok(values) => struct_output::generate_annotation_struct(ast, values).into(),
         Err(e) => e.into_compile_error().into(),
     }
 }

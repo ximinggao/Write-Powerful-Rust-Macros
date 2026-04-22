@@ -1,4 +1,5 @@
 use config_macro::config_struct;
+use config_macro::config;
 
 #[config_struct]
 #[derive(Debug)]
@@ -6,6 +7,7 @@ struct ConfigStruct {}
 
 fn main() {
     let config = ConfigStruct::new();
+    config!();
     println!("{config:?}")
 }
 
