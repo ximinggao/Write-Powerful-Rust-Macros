@@ -19,16 +19,18 @@ mod struct_output;
 pub fn config(item: TokenStream) -> TokenStream {
     let input: ConfigInput = parse_macro_input!(item);
 
-    match find_yaml_values(input) {
+    match find_yaml_values(&input) {
         Ok(values) => generate_config_struct(values).into(),
         Err(e) => e.into_compile_error().into(),
     }
 }
 
-fn find_yaml_values(input: ConfigInput) -> Result<HashMap<String, String>, syn::Error> {
-    let file_name = input
-        .path
-        .unwrap_or_else(|| "./configuration/config.yaml".to_string());
+fn find_yaml_values(input: &ConfigInput) -> Result<HashMap<String, String>, syn::Error> {
+    let file_name = if let Some(path) = &input.path {
+        path.to_string()
+    } else {
+        "./configuration/config.yaml".to_string()
+    };
     let file = fs::File::open(&file_name).map_err(|err| {
         syn::Error::new(
             Span::call_site(),
@@ -44,8 +46,10 @@ pub fn config_struct(attr: TokenStream, item: TokenStream) -> TokenStream {
     let input: ConfigInput = parse_macro_input!(attr);
     let ast: DeriveInput = parse_macro_input!(item);
 
-    match find_yaml_values(input) {
-        Ok(values) => struct_output::generate_annotation_struct(ast, values).into(),
+    match find_yaml_values(&input) {
+        Ok(values) => {
+            struct_output::generate_annotation_struct(ast, values, input.exclude_from).into()
+        }
         Err(e) => e.into_compile_error().into(),
     }
 }

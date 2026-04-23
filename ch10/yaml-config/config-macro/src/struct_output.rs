@@ -6,11 +6,17 @@ use syn::Ident;
 pub fn generate_annotation_struct(
     input: syn::DeriveInput,
     yaml_values: HashMap<String, String>,
+    exclude_from_method: bool,
 ) -> TokenStream {
     let attributes = &input.attrs;
     let name = &input.ident;
     let fields = generate_fields(&yaml_values);
     let inits = generate_inits(&yaml_values);
+    let from = if !exclude_from_method {
+        generate_from_method(name, &yaml_values)
+    } else {
+        quote!()
+    };
 
     quote! {
         #(#attributes)*
@@ -25,6 +31,8 @@ pub fn generate_annotation_struct(
                 }
             }
         }
+
+        #from
     }
 }
 
@@ -51,4 +59,28 @@ fn generate_inits(yaml_values: &HashMap<String, String>) -> Vec<TokenStream> {
             }
         })
         .collect()
+}
+
+fn generate_inserts_for_from(yaml_values: &HashMap<String, String>) -> Vec<TokenStream> {
+    yaml_values
+        .iter()
+        .map(|v| {
+            let key = v.0;
+            let key_as_ident = Ident::new(key, Span::call_site());
+            quote! (map.insert(#key.to_string(), value.#key_as_ident))
+        })
+        .collect()
+}
+
+fn generate_from_method(name: &Ident, yaml_values: &HashMap<String, String>) -> TokenStream {
+    let inserts = generate_inserts_for_from(yaml_values);
+    quote! {
+        impl From<#name> for std::collections::HashMap<String, String> {
+            fn from(value: #name) -> Self {
+                let mut map = std::collections::HashMap::new();
+                #(#inserts;)*
+                map
+            }
+        }
+    }
 }
