@@ -2,6 +2,12 @@
 name = "config-macro"
 version = "0.1.0"
 edition = "2024"
+description = "Macros for using config as a struct within your application"
+license = "MIT"
+homepage = "https://github.com/some-page"
+repository = "https://github.com/some-page"
+readme = "README.md"
+keywords = ["configuration", "macro", "yaml"]
 
 [dependencies]
 proc-macro2 = "1.0.106"
