@@ -1,4 +1,4 @@
-error: config macro only allows for 'path' input
+error: config macro only allows for 'path' or 'exclude' input
  --> tests/fails/unknown_config_keyword.rs:3:9
   |
 3 | config!(unknown = stuff);
